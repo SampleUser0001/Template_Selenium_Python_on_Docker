@@ -31,10 +31,13 @@ if __name__ == '__main__':
 
     # Selenium 経由でブラウザを操作する
     URL_HOME = setting.ENV_DIC[ImportEnvKeyEnum.URL_HOME.value]
-    driver = Factory.create()
-    driver.get(URL_HOME)
-    logger.info(driver.current_url)
+    
+    try: 
+        driver = Factory.create()
+        driver.get(URL_HOME)
+        logger.info(driver.current_url)
 
-    # ブラウザを終了する
-    driver.quit()
+    finally:
+        # ブラウザを終了する
+        driver.quit()
 
