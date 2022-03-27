@@ -2,14 +2,11 @@
 from logging import getLogger, config, StreamHandler, DEBUG
 import os
 
-# 起動引数を使う場合はコメントを外す。
-# import sys
 from logutil import LogUtil
 from importenv import ImportEnvKeyEnum
 import importenv as setting
 
 from selenium import webdriver
-from factory import SeleniumDriverFactory as Factory
 
 PYTHON_APP_HOME = os.getenv('PYTHON_APP_HOME')
 LOG_CONFIG_FILE = ['config', 'log_config.json']
@@ -23,18 +20,19 @@ logger.setLevel(DEBUG)
 logger.addHandler(handler)
 logger.propagate = False
 
-if __name__ == '__main__':
-    # 起動引数の取得
-    # args = sys.argv
-    # args[0]はpythonのファイル名。
-    # 実際の引数はargs[1]から。
-
-    # Selenium 経由でブラウザを操作する
-    URL_HOME = setting.ENV_DIC[ImportEnvKeyEnum.URL_HOME.value]
-    driver = Factory.create()
-    driver.get(URL_HOME)
-    logger.info(driver.current_url)
-
-    # ブラウザを終了する
-    driver.quit()
-
+class SeleniumDriverFactory:
+    
+    @staticmethod
+    def create():
+        # .envの取得
+        SELENIUM_HOST_NAME = setting.ENV_DIC[ImportEnvKeyEnum.SELENIUM_HOST_NAME.value]
+    
+        # Chrome のオプションを設定する
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        
+        # Selenium Server に接続する
+        return webdriver.Remote(
+            command_executor='http://{}:4444/wd/hub'.format(SELENIUM_HOST_NAME),
+            options=options
+        )

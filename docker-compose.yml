@@ -1,8 +1,18 @@
 version: '3'
 services:
-  python:
+  selenium:
+    image: selenium/standalone-chrome:4
+    container_name: selenium
+    ports: 
+      - "4444:4444"
+    shm_size: "2g"
+  test:
     build: .
-    container_name: python
+    container_name: test_by_selenium
     volumes:
       - ./app:/opt/app
-    entrypoint: /opt/app/start.sh
+    # entrypoint: /opt/app/start.sh
+    tty: true
+    depends_on:
+      selenium:
+        condition: service_started
